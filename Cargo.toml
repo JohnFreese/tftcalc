@@ -9,3 +9,6 @@ edition = "2021"
 nalgebra = "0.32.3"
 nalgebra-sparse = "0.9.0"
 thiserror = "1.0.50"
+
+[dev-dependencies]
+quickcheck = "1.0.3"
