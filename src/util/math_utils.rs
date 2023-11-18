@@ -1,5 +1,26 @@
 use factorial::factorial;
-use std::collections::HashMap;
+use std::{collections::HashMap, io::Empty};
+
+struct Node<'a, T> {
+    value: T,
+    next: Option<Box<&'a Node<'a, T>>>
+}
+
+impl<'a, T: Default + Copy> From<Vec<T>> for Node<'a, T> {
+    fn from(value: Vec<T>) -> Self {
+        if let Some(firstValue) = value.get(0) {
+            let head: Node<T> = Node {value: *firstValue, next: None};
+            let mut prev: &Node<T> = &head;
+            for v in &value[1..] {
+                let node: Node<T> = Node {value: *v, next: None};
+                *prev.next = Some(Box::new(&node));
+                prev = &node;
+            }
+            return head;
+        }
+        return Node {value: Default::default(), next: None};
+    }
+}
 
 // [1, 1, 2, 4] multiset
 pub fn multiset_permute(set: Vec<usize>) {
