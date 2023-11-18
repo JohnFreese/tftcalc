@@ -1,11 +1,5 @@
 use factorial::factorial;
-use std::{collections::HashMap, io::Empty};
-
-#[derive(Clone)]
-struct Node<T> {
-    value: T,
-    next: Option<Box<Node<T>>>
-}
+use std::{collections::{HashMap, LinkedList}, io::Empty};
 
 // [1, 1, 2, 4] multiset
 pub fn multiset_permute(set: Vec<usize>) {
@@ -14,6 +8,9 @@ pub fn multiset_permute(set: Vec<usize>) {
     for v in &set {
         //create single permutation
         //push into permutations
+        // let ll = LinkedList::from_iter(set.clone().iter()); 
+        let mut set_iter = set.clone().iter_mut();
+
         let single_perm: Vec<usize> = Vec::with_capacity(set.len());
 
         permutations.push(single_perm);
@@ -40,22 +37,6 @@ fn calculate_multiplicities(set: &Vec<usize>) -> Vec<usize> {
     });
 
     return map.values().cloned().collect();
-}
-
-fn vec_to_linked_list<'a, T>(value: Vec<T>) -> Node<T> {
-    if let Some(firstValue) = value.get(0) {
-        let mut head: Option<Box<Node<'a, T>>> = None;
-        for v in value {
-            let node: Node<'a, T> = Node {value: v, next: None};
-            node.next = head;
-            head = Some(Box::new(&node));
-        }
-
-        if let Some(newHead) = head {
-            return newHead;
-        }
-    }
-    return Box::new(Node {value: Default::default(), next: None});
 }
 
 mod factorial {
