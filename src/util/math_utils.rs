@@ -1,25 +1,10 @@
 use factorial::factorial;
 use std::{collections::HashMap, io::Empty};
 
-struct Node<'a, T> {
+#[derive(Clone)]
+struct Node<T> {
     value: T,
-    next: Option<Box<&'a Node<'a, T>>>
-}
-
-impl<'a, T: Default + Copy> From<Vec<T>> for Node<'a, T> {
-    fn from(value: Vec<T>) -> Self {
-        if let Some(firstValue) = value.get(0) {
-            let head: Node<T> = Node {value: *firstValue, next: None};
-            let mut prev: &Node<T> = &head;
-            for v in &value[1..] {
-                let node: Node<T> = Node {value: *v, next: None};
-                *prev.next = Some(Box::new(&node));
-                prev = &node;
-            }
-            return head;
-        }
-        return Node {value: Default::default(), next: None};
-    }
+    next: Option<Box<Node<T>>>
 }
 
 // [1, 1, 2, 4] multiset
@@ -55,6 +40,22 @@ fn calculate_multiplicities(set: &Vec<usize>) -> Vec<usize> {
     });
 
     return map.values().cloned().collect();
+}
+
+fn vec_to_linked_list<'a, T>(value: Vec<T>) -> Node<T> {
+    if let Some(firstValue) = value.get(0) {
+        let mut head: Option<Box<Node<'a, T>>> = None;
+        for v in value {
+            let node: Node<'a, T> = Node {value: v, next: None};
+            node.next = head;
+            head = Some(Box::new(&node));
+        }
+
+        if let Some(newHead) = head {
+            return newHead;
+        }
+    }
+    return Box::new(Node {value: Default::default(), next: None});
 }
 
 mod factorial {
