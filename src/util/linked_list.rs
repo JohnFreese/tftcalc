@@ -41,19 +41,24 @@ impl<T> LinkedList<T> {
     pub fn append(&mut self, value: T) {
         let new_node = Some(Box::new(Node { value, next: None }));
 
-        // emtpy list case
-        if let None = self.head {
-            self.head = new_node;
+        match self.head.as_mut() {
+            None => self.head = new_node,
+            Some(head) => {
+                println!("<===========>");
+                println!("non empty case");
+                let mut node = head;
+                let mut x = 0;
 
-        // non empty list case
-        } else if let Some(head) = self.head.take() {
-            let mut node = *head;
+                while let Some(val) = node.next.as_mut() {
+                    x += 1;
+                    node = val;
+                }
 
-            while let Some(val) = node.next.take() {
-                node = *val;
+                println!("<===========>");
+                println!("while runs: {}", x);
+
+                node.next = new_node;
             }
-
-            node.next = new_node;
         }
     }
 
@@ -308,7 +313,7 @@ mod test {
 
     #[test]
     fn vec_macro() {
-        let mut actual = ll![1,2,3];
+        let mut actual = ll![1, 2, 3];
         let mut expected = LinkedList::new();
         expected.push(3);
         expected.push(2);
