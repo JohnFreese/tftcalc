@@ -1,20 +1,32 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct LinkedList<T> {
     head: Link<T>,
-    len: usize,
 }
 
 type Link<T> = Option<Box<Node<T>>>;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Node<T> {
     value: T,
     next: Link<T>,
 }
 
+#[macro_export]
+macro_rules! ll {
+    ( $( $x:expr ),* ) => {
+        {
+            let mut temp_ll= LinkedList::new();
+            $(
+                temp_ll.push($x);
+            )*
+            temp_ll
+        }
+    };
+}
+
 impl<T> LinkedList<T> {
     pub fn new() -> Self {
-        return LinkedList { head: None, len: 0 };
+        return LinkedList { head: None };
     }
 
     pub fn push(&mut self, value: T) {
@@ -24,6 +36,25 @@ impl<T> LinkedList<T> {
         });
 
         self.head = Some(node);
+    }
+
+    pub fn append(&mut self, value: T) {
+        let new_node = Some(Box::new(Node { value, next: None }));
+
+        // emtpy list case
+        if let None = self.head {
+            self.head = new_node;
+
+        // non empty list case
+        } else if let Some(head) = self.head.take() {
+            let mut node = *head;
+
+            while let Some(val) = node.next.take() {
+                node = *val;
+            }
+
+            node.next = new_node;
+        }
     }
 
     pub fn pop(&mut self) -> Option<T> {
@@ -42,21 +73,36 @@ impl<T> LinkedList<T> {
     }
 
     pub fn get_mut(&mut self, index: usize) -> Option<&mut Node<T>> {
-        if (index >= self.len) {
-            return None;
+        let mut node = self.iter_mut();
+        // probably need to be smarter about this
+        for _ in 0..index {
+            node.next();
         }
 
-        todo!()
+        return node.next;
     }
-}
 
-pub struct IntoIter<T>(LinkedList<T>);
-
-impl<T> LinkedList<T> {
     pub fn into_iter(self) -> IntoIter<T> {
         IntoIter(self)
     }
+
+    pub fn iter(&self) -> Iter<'_, T> {
+        Iter {
+            next: self.head.as_deref().map(|n| &*n),
+        }
+    }
+
+    pub fn iter_mut(&mut self) -> IterMut<'_, T> {
+        IterMut {
+            next: self.head.as_deref_mut(),
+        }
+    }
 }
+
+/* Into Iter */
+
+#[derive(Debug)]
+pub struct IntoIter<T>(LinkedList<T>);
 
 impl<T> Iterator for IntoIter<T> {
     type Item = T;
@@ -66,28 +112,56 @@ impl<T> Iterator for IntoIter<T> {
     }
 }
 
+/* Immutable Iterator*/
+
+#[derive(Debug)]
 pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>,
 }
 
-impl<'a, T> LinkedList<T> {
-    pub fn iter(&self) -> Iter<'a, T> {
-        Iter {
-            next: self.head.map(|n| &n),
-        }
-    }
-}
-
 impl<'a, T> Iterator for Iter<'a, T> {
-    type Item = &T;
+    type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.next.map(|n| {
-            self.next = n.next.map(|n| &n);
+            self.next = n.next.as_deref();
             &n.value
         })
     }
 }
+
+/* Mutable Iterator*/
+
+#[derive(Debug)]
+pub struct IterMut<'a, T> {
+    next: Option<&'a mut Node<T>>,
+}
+
+impl<'a, T> Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.take().map(|n| {
+            self.next = n.next.as_deref_mut();
+            &mut n.value
+        })
+    }
+}
+
+/* From Vec */
+impl<T> From<Vec<T>> for LinkedList<T> {
+    fn from(vec: Vec<T>) -> Self {
+        let mut ll = LinkedList::new();
+
+        for val in vec {
+            ll.append(val);
+        }
+
+        return ll;
+    }
+}
+
+/* Drop */
 
 impl<T> Drop for LinkedList<T> {
     fn drop(&mut self) {
@@ -163,5 +237,83 @@ mod test {
         assert_eq!(iter.next(), Some(2));
         assert_eq!(iter.next(), Some(1));
         assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn iter() {
+        let mut list = LinkedList::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&3));
+        assert_eq!(iter.next(), Some(&2));
+        assert_eq!(iter.next(), Some(&1));
+    }
+
+    #[test]
+    fn iter_mut() {
+        let mut list = LinkedList::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter_mut();
+        assert_eq!(iter.next(), Some(&mut 3));
+        assert_eq!(iter.next(), Some(&mut 2));
+        assert_eq!(iter.next(), Some(&mut 1));
+    }
+
+    #[test]
+    fn get_iter() {
+        let mut list = LinkedList::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let actual = list.get_mut(1).map(|n| n.value);
+        assert_eq!(actual, Some(2));
+    }
+
+    #[test]
+    fn get_iter_big() {
+        let mut list = LinkedList::new();
+        list.push(10);
+        list.push(20);
+        list.push(30);
+        list.push(100);
+        list.push(200);
+        list.push(300);
+        list.push(1000);
+        list.push(2000);
+        list.push(3000);
+
+        let actual = list.get_mut(5).map(|n| n.value);
+        assert_eq!(actual, Some(100));
+    }
+
+    #[test]
+    fn from_vec() {
+        let vecy_poo = vec![1, 2, 3];
+        let actual_linky_poo = LinkedList::from(vecy_poo);
+        let mut expected_linky_poo = LinkedList::new();
+
+        expected_linky_poo.push(3);
+        expected_linky_poo.push(2);
+        expected_linky_poo.push(1);
+
+        assert_eq!(actual_linky_poo, expected_linky_poo);
+    }
+
+    #[test]
+    fn vec_macro() {
+        let mut actual = ll![1,2,3];
+        let mut expected = LinkedList::new();
+        expected.push(3);
+        expected.push(2);
+        expected.push(1);
+
+        assert_eq!(actual, expected);
     }
 }
