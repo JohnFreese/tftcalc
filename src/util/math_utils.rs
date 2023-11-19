@@ -1,17 +1,22 @@
 use factorial::factorial;
-use std::{collections::{HashMap, LinkedList}, io::Empty};
+use std::{collections::{HashMap}, io::Empty};
+
+use super::linked_list::LinkedList;
 
 // [1, 1, 2, 4] multiset
 pub fn multiset_permute(set: Vec<usize>) {
     // let permutations = vec![vec![0, set.len()], calculate_unique_permutations(set)];
     let mut permutations: Vec<Vec<usize>> = Vec::with_capacity(calculate_unique_permutations(&set));
+    let mut slice = set.clone();
+    slice.reverse();
+    let ll = LinkedList::from(slice); 
+
     for v in &set {
         //create single permutation
         //push into permutations
-        // let ll = LinkedList::from_iter(set.clone().iter()); 
-        let mut set_iter = set.clone().iter_mut();
+        
 
-        let single_perm: Vec<usize> = Vec::with_capacity(set.len());
+        let single_perm: Vec<usize> = Vec::from(ll);
 
         permutations.push(single_perm);
     }

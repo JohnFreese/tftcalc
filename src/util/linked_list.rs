@@ -11,13 +11,25 @@ pub struct Node<T> {
     next: Link<T>,
 }
 
+impl<T> Node<T> {
+    pub fn append(&mut self, value: T) {
+        match self.next.as_mut() {
+            None => {
+                let new_node = Some(Box::new(Node { value, next: None }));
+                self.next = new_node;
+            }
+            Some(next) => next.append(value),
+        }
+    }
+}
+
 #[macro_export]
 macro_rules! ll {
     ( $( $x:expr ),* ) => {
         {
             let mut temp_ll= LinkedList::new();
             $(
-                temp_ll.push($x);
+                temp_ll.append($x);
             )*
             temp_ll
         }
@@ -39,26 +51,12 @@ impl<T> LinkedList<T> {
     }
 
     pub fn append(&mut self, value: T) {
-        let new_node = Some(Box::new(Node { value, next: None }));
-
         match self.head.as_mut() {
-            None => self.head = new_node,
-            Some(head) => {
-                println!("<===========>");
-                println!("non empty case");
-                let mut node = head;
-                let mut x = 0;
-
-                while let Some(val) = node.next.as_mut() {
-                    x += 1;
-                    node = val;
-                }
-
-                println!("<===========>");
-                println!("while runs: {}", x);
-
-                node.next = new_node;
+            None => {
+                let new_node = Some(Box::new(Node { value, next: None }));
+                self.head = new_node;
             }
+            Some(node) => node.append(value),
         }
     }
 
@@ -163,6 +161,18 @@ impl<T> From<Vec<T>> for LinkedList<T> {
         }
 
         return ll;
+    }
+}
+
+impl<T> From<LinkedList<T>> for Vec<T> {
+    fn from(ll: LinkedList<T>) -> Self {
+        let mut vec = Vec::new();
+
+        for val in ll.into_iter() {
+            vec.push(val);
+        } 
+
+        return vec;
     }
 }
 
