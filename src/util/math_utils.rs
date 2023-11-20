@@ -1,5 +1,7 @@
 use factorial::factorial;
-use std::{collections::{HashMap}, io::Empty};
+use std::{collections::HashMap, io::Empty};
+
+use crate::util::linked_list::Node;
 
 use super::linked_list::LinkedList;
 
@@ -9,16 +11,21 @@ pub fn multiset_permute(set: Vec<usize>) {
     let mut permutations: Vec<Vec<usize>> = Vec::with_capacity(calculate_unique_permutations(&set));
     let mut slice = set.clone();
     slice.reverse();
-    let ll = LinkedList::from(slice); 
+    let mut ll = LinkedList::from(slice);
 
-    for v in &set {
-        //create single permutation
-        //push into permutations
-        
+    type Link<'a> = Option<&'a mut Node<usize>>;
+    let h: Link = ll.get_mut(0); // first element
+    let i: Link = ll.get_mut(set.len() - 2); // second to last element
+    let j: Link = ll.get_mut(set.len() - 1); // last element
+    let s: Link = None;
+    let t: Link = None;
 
-        let single_perm: Vec<usize> = Vec::from(ll);
+    // loopless iteration
+    // while let Some(jnext) = j.map(|n| n.next) {
+    while (j.map(|n| n.next).is_some() || j.map(|n| n.value) < h.map(|n| n.value)) {
+        let single_perm = ll.clone();
 
-        permutations.push(single_perm);
+        permutations.push(Vec::from(single_perm));
     }
 }
 
@@ -27,7 +34,7 @@ fn calculate_unique_permutations(set: &Vec<usize>) -> usize {
     let multiplicities = calculate_multiplicities(&set);
 
     let multi_facs = multiplicities.iter().fold(1 as usize, |a, e| {
-        return a.to_owned() * factorial(e.to_owned()); 
+        return a.to_owned() * factorial(e.to_owned());
     });
 
     return factorial(set.len()) / multi_facs;
@@ -45,8 +52,8 @@ fn calculate_multiplicities(set: &Vec<usize>) -> Vec<usize> {
 }
 
 mod factorial {
-    use std::collections::HashMap;
     use once_cell::sync::Lazy;
+    use std::collections::HashMap;
 
     const FACTORIAL_TABLE: Lazy<HashMap<usize, usize>> = Lazy::new(|| HashMap::new());
 

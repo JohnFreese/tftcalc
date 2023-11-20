@@ -1,14 +1,14 @@
 #[derive(Debug, PartialEq, Eq)]
 pub struct LinkedList<T> {
-    head: Link<T>,
+    pub head: Link<T>,
 }
 
 type Link<T> = Option<Box<Node<T>>>;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Node<T> {
-    value: T,
-    next: Link<T>,
+    pub value: T,
+    pub next: Link<T>,
 }
 
 impl<T> Node<T> {
@@ -164,6 +164,7 @@ impl<T> From<Vec<T>> for LinkedList<T> {
     }
 }
 
+/* From LinkedList */
 impl<T> From<LinkedList<T>> for Vec<T> {
     fn from(ll: LinkedList<T>) -> Self {
         let mut vec = Vec::new();
@@ -177,13 +178,25 @@ impl<T> From<LinkedList<T>> for Vec<T> {
 }
 
 /* Drop */
-
 impl<T> Drop for LinkedList<T> {
     fn drop(&mut self) {
         let mut cur_link = self.head.take();
         while let Some(mut boxed_node) = cur_link {
             cur_link = boxed_node.next.take();
         }
+    }
+}
+
+/* Clone */ 
+impl<T: Clone> Clone for LinkedList<T> {
+    fn clone(&self) -> Self {
+        Self { head: self.head.clone() }
+    }
+}
+
+impl<T: Clone> Clone for Node<T> {
+    fn clone(&self) -> Self {
+        Self { value: self.value.clone(), next: self.next.clone() }
     }
 }
 
@@ -330,5 +343,13 @@ mod test {
         expected.push(1);
 
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn clone() {
+        let original = ll![1, 2, 3];
+        let cloned = original.clone();
+
+        assert_eq!(original, cloned);
     }
 }
