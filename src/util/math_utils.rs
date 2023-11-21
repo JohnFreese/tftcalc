@@ -8,25 +8,25 @@ use super::linked_list::LinkedList;
 // [1, 1, 2, 4] multiset
 pub fn multiset_permute(set: Vec<usize>) {
     // let permutations = vec![vec![0, set.len()], calculate_unique_permutations(set)];
-    let mut permutations: Vec<Vec<usize>> = Vec::with_capacity(calculate_unique_permutations(&set));
-    let mut slice = set.clone();
-    slice.reverse();
-    let mut ll = LinkedList::from(slice);
-
-    type Link<'a> = Option<&'a mut Node<usize>>;
-    let h: Link = ll.get_mut(0); // first element
-    let i: Link = ll.get_mut(set.len() - 2); // second to last element
-    let j: Link = ll.get_mut(set.len() - 1); // last element
-    let s: Link = None;
-    let t: Link = None;
-
-    // loopless iteration
-    // while let Some(jnext) = j.map(|n| n.next) {
-    while (j.map(|n| n.next).is_some() || j.map(|n| n.value) < h.map(|n| n.value)) {
-        let single_perm = ll.clone();
-
-        permutations.push(Vec::from(single_perm));
-    }
+    // let mut permutations: Vec<Vec<usize>> = Vec::with_capacity(calculate_unique_permutations(&set));
+    // let mut slice = set.clone();
+    // slice.reverse();
+    // let mut ll = LinkedList::from(slice);
+    //
+    // type Link<'a> = Option<&'a mut Node<usize>>;
+    // let h: Link = ll.get_mut(0); // first element
+    // let i: Link = ll.get_mut(set.len() - 2); // second to last element
+    // let j: Link = ll.get_mut(set.len() - 1); // last element
+    // let s: Link = None;
+    // let t: Link = None;
+    //
+    // // loopless iteration
+    // // while let Some(jnext) = j.map(|n| n.next) {
+    // while (j.map(|n| n.next).is_some() || j.map(|n| n.value) < h.map(|n| n.value)) {
+    //     let mut single_perm = ll.clone();
+    //
+    //     permutations.push(Vec::from(single_perm));
+    // }
 }
 
 // n!/(m1! * m2! ... * mn!)

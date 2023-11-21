@@ -1,9 +1,11 @@
+use std::{cell::RefCell, borrow::BorrowMut};
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct LinkedList<T> {
     pub head: Link<T>,
 }
 
-type Link<T> = Option<Box<Node<T>>>;
+type Link<T> = RefCell<Option<Box<Node<T>>>>;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Node<T> {
@@ -12,13 +14,27 @@ pub struct Node<T> {
 }
 
 impl<T> Node<T> {
+    pub fn new(value: T) -> Node<T> {
+        Node {
+            value,
+            next: RefCell::from(None)
+        }
+    }
+
+    pub fn newLink(value: T) -> Link<T> {
+        RefCell::from(Some(Box::new(Node::new(value))))
+    }
+
+    pub fn emptyLink() -> Link<T> {
+        RefCell::from(None)
+    }
+
     pub fn append(&mut self, value: T) {
-        match self.next.as_mut() {
+        match *self.next.borrow_mut() {
             None => {
-                let new_node = Some(Box::new(Node { value, next: None }));
-                self.next = new_node;
+                self.next = Node::newLink(value);
             }
-            Some(next) => next.append(value),
+            Some(mut next) => next.append(value),
         }
     }
 }
@@ -38,25 +54,25 @@ macro_rules! ll {
 
 impl<T> LinkedList<T> {
     pub fn new() -> Self {
-        return LinkedList { head: None };
+        return LinkedList { head: Node::emptyLink() };
     }
 
     pub fn push(&mut self, value: T) {
         let node = Box::new(Node {
             value,
-            next: self.head.take(),
+            next: RefCell::from(self.head.take()),
         });
 
-        self.head = Some(node);
+        self.head = RefCell::from(Some(node));
     }
 
     pub fn append(&mut self, value: T) {
-        match self.head.as_mut() {
+        match *self.head.borrow_mut() {
             None => {
-                let new_node = Some(Box::new(Node { value, next: None }));
+                let new_node = Node::newLink(value);
                 self.head = new_node;
             }
-            Some(node) => node.append(value),
+            Some(mut node) => node.append(value),
         }
     }
 
@@ -68,11 +84,11 @@ impl<T> LinkedList<T> {
     }
 
     pub fn peek(&self) -> Option<&T> {
-        self.head.as_ref().map(|n| &n.value)
+        self.head.borrow_mut().map(|n| &n.value)
     }
 
     pub fn peek_mut(&mut self) -> Option<&mut T> {
-        self.head.as_mut().map(|n| &mut n.value)
+        self.head.borrow_mut().map(|mut n| &mut n.value)
     }
 
     pub fn get_mut(&mut self, index: usize) -> Option<&mut Node<T>> {
@@ -91,13 +107,13 @@ impl<T> LinkedList<T> {
 
     pub fn iter(&self) -> Iter<'_, T> {
         Iter {
-            next: self.head.as_deref().map(|n| &*n),
+            next: self.head.borrow_mut().map(|n| &*n),
         }
     }
 
     pub fn iter_mut(&mut self) -> IterMut<'_, T> {
         IterMut {
-            next: self.head.as_deref_mut(),
+            next: self.head.get_mut().as_deref_mut(),
         }
     }
 }
@@ -126,10 +142,17 @@ impl<'a, T> Iterator for Iter<'a, T> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.next.map(|n| {
-            self.next = n.next.as_deref();
-            &n.value
-        })
+        // self.next.map(|n| {
+        //     self.next = n.next.borrow().as_deref();
+        //     &n.value
+        // })
+        match self.next.borrow_mut() {
+            None => None,
+            Some(next) => {
+                self.next = next.next.borrow_mut().as_deref();
+                Some(&next.value)
+            }
+        }
     }
 }
 
@@ -145,7 +168,7 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 
     fn next(&mut self) -> Option<Self::Item> {
         self.next.take().map(|n| {
-            self.next = n.next.as_deref_mut();
+            self.next = n.next.borrow_mut().as_deref_mut();
             &mut n.value
         })
     }
