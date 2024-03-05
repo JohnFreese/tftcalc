@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 
-use super::constants::MAX_LEVEL;
-use super::constants::MAX_NUMBER_OF_PLAYERS;
+use super::constants::{MAX_NUMBER_OF_PLAYERS, MAX_LEVEL};
 
 pub enum ChampionCost {
     OneCost,
@@ -35,7 +34,7 @@ pub struct BoardState {
     pub player_name: String
 }
 
-pub struct LevelOutOfBoundsError {
+pub struct PlayerLevelOutOfBoundsError {
     attempted_level: u8
 }
 
@@ -49,19 +48,25 @@ impl BoardState {
         }
     }
 
-    pub fn set_level(mut self, attempted_level: u8) -> Result<Self, LevelOutOfBoundsError>  {
+    pub fn set_level(mut self, attempted_level: u8) -> Result<Self, PlayerLevelOutOfBoundsError>  {
        match attempted_level {
            1..=MAX_LEVEL => {
                self.level = attempted_level;
                Ok(self)
            }
-           _ => Err(LevelOutOfBoundsError{ attempted_level }),
+           _ => Err(PlayerLevelOutOfBoundsError{ attempted_level }),
        }
     } 
 
     pub fn get_level(&self) -> u8 {
         self.level
     }
+}
+
+struct GameState {
+    enemy_boards: [BoardState; MAX_NUMBER_OF_PLAYERS - 1],
+    player_board: BoardState,
+    round: Round
 }
 
 pub enum Round {
@@ -117,10 +122,4 @@ pub enum Round {
     SevenFive,
     SevenSix,
     SevenSeven,
-}
-
-struct GameState {
-    enemy_boards: [BoardState; MAX_NUMBER_OF_PLAYERS - 1],
-    player_board: BoardState,
-    round: Round
 }
