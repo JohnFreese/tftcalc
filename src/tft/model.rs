@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 
-pub const MAX_LEVEL: u8 = 10;
-pub const MAX_NUMBER_OF_PLAYERS: usize = 8;
+use super::constants::MAX_LEVEL;
+use super::constants::MAX_NUMBER_OF_PLAYERS;
 
 pub enum ChampionCost {
     OneCost,
