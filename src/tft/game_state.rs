@@ -7,9 +7,9 @@ use super::constants::{MAX_LEVEL, MAX_NUMBER_OF_PLAYERS};
 use super::tft_model::{BoardState, Champion, Round, StarLevel};
 
 struct GameState {
-    enemy_boards: [BoardState; MAX_NUMBER_OF_PLAYERS - 1],
-    player_board: BoardState,
-    round: Round,
+    pub enemy_boards: [BoardState; MAX_NUMBER_OF_PLAYERS - 1],
+    pub player_board: BoardState,
+    pub round: Round,
 }
 
 impl GameState {
@@ -102,6 +102,7 @@ mod test {
             ..one_star.clone()
         };
         let expected_champs = vec![two_star.clone(), two_star, one_star.clone()];
+
         assert_eq!(
             expected_champs,
             get_champions_by_copies(num_copies, one_star)
