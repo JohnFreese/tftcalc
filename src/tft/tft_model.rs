@@ -75,12 +75,6 @@ impl BoardState {
     }
 }
 
-struct GameState {
-    enemy_boards: [BoardState; MAX_NUMBER_OF_PLAYERS - 1],
-    player_board: BoardState,
-    round: Round,
-}
-
 pub enum Round {
     OneOne,
     OneTwo,
