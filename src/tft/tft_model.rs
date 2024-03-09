@@ -2,6 +2,7 @@ use std::cell::RefCell;
 
 use super::constants::{MAX_LEVEL, MAX_NUMBER_OF_PLAYERS};
 
+#[derive(Clone)]
 pub enum ChampionCost {
     OneCost,
     TwoCost,
@@ -10,12 +11,14 @@ pub enum ChampionCost {
     FiveCost,
 }
 
+#[derive(Clone)]
 pub enum StarLevel {
     OneStar,
     TwoStar,
     ThreeStar,
 }
 
+#[derive(Clone)]
 pub struct Champion {
     pub cost: ChampionCost,
     pub name: String,
@@ -34,11 +37,13 @@ impl Default for Champion {
     }
 }
 
+#[derive(Clone)]
 pub enum PlayerState {
     Dead,
     Alive,
 }
 
+#[derive(Clone)]
 pub struct BoardState {
     pub champions: RefCell<Vec<Champion>>,
     level: u8,
@@ -46,18 +51,23 @@ pub struct BoardState {
     pub player_name: String,
 }
 
+#[derive(Clone)]
 pub struct PlayerLevelOutOfBoundsError {
     attempted_level: u8,
 }
 
 impl BoardState {
-    pub fn new(player_name: String) -> BoardState {
+    pub fn new(player_name: String, level: u8) -> BoardState {
         BoardState {
             champions: RefCell::new(Vec::new()),
-            level: 1,
             state: PlayerState::Alive,
+            level,
             player_name,
         }
+    }
+
+    pub fn empty_board(player_name: String) -> BoardState {
+        Self::new(player_name, 1)
     }
 
     pub fn set_level(mut self, attempted_level: u8) -> Result<Self, PlayerLevelOutOfBoundsError> {
