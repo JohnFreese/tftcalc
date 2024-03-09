@@ -46,7 +46,7 @@ fn get_champions_by_copies(copies: u8, champ: Champion) -> Vec<Champion> {
     let mut champs = vec![];
 
     // there is atleast 1 3 star
-    if copies / 9 > 1 {
+    if copies / 9 >= 1 {
         let num_3_star = (copies as f32 / 9.0).floor() as u8;
         copies = copies % 9;
 
@@ -60,7 +60,7 @@ fn get_champions_by_copies(copies: u8, champ: Champion) -> Vec<Champion> {
     }
 
     // there is atleast 1 2 star
-    if copies / 3 > 1 {
+    if copies / 3 >= 1 {
         let num_2_star = (copies as f32 / 3.0).floor() as u8;
         copies = copies % 3;
 
@@ -85,7 +85,7 @@ fn get_champions_by_copies(copies: u8, champ: Champion) -> Vec<Champion> {
 }
 
 #[cfg(test)]
-mod test {
+mod test_champ_copies {
     use crate::tft::{
         game_state::get_champions_by_copies,
         sets::set11::Set11,
@@ -93,7 +93,7 @@ mod test {
     };
 
     #[test]
-    fn champ_copies() {
+    fn two_stars_and_one_stars() {
         let set11 = Set11::new();
         let num_copies = 7;
         let one_star = set11.set_11_champions.get(0).unwrap().clone();
@@ -102,6 +102,53 @@ mod test {
             ..one_star.clone()
         };
         let expected_champs = vec![two_star.clone(), two_star, one_star.clone()];
+
+        assert_eq!(
+            expected_champs,
+            get_champions_by_copies(num_copies, one_star)
+        )
+    }
+
+    #[test]
+    fn three_star() {
+        let set11 = Set11::new();
+        let num_copies = 9;
+        let one_star = set11.set_11_champions.get(0).unwrap().clone();
+        let three_star = Champion {
+            star: StarLevel::ThreeStar,
+            ..one_star.clone()
+        };
+        let expected_champs = vec![three_star];
+
+        assert_eq!(
+            expected_champs,
+            get_champions_by_copies(num_copies, one_star)
+        )
+    }
+
+    #[test]
+    fn two_stars() {
+        let set11 = Set11::new();
+        let num_copies = 6;
+        let one_star = set11.set_11_champions.get(0).unwrap().clone();
+        let two_star = Champion {
+            star: StarLevel::TwoStar,
+            ..one_star.clone()
+        };
+        let expected_champs = vec![two_star.clone(), two_star];
+
+        assert_eq!(
+            expected_champs,
+            get_champions_by_copies(num_copies, one_star)
+        )
+    }
+
+    #[test]
+    fn one_stars() {
+        let set11 = Set11::new();
+        let num_copies = 2;
+        let one_star = set11.set_11_champions.get(0).unwrap().clone();
+        let expected_champs = vec![one_star.clone(), one_star.clone()];
 
         assert_eq!(
             expected_champs,
