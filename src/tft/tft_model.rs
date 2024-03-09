@@ -1,41 +1,53 @@
 use std::cell::RefCell;
 
-use super::constants::{MAX_NUMBER_OF_PLAYERS, MAX_LEVEL};
+use super::constants::{MAX_LEVEL, MAX_NUMBER_OF_PLAYERS};
 
 pub enum ChampionCost {
     OneCost,
     TwoCost,
     ThreeCost,
     FourCost,
-    FiveCost
+    FiveCost,
 }
 
 pub enum StarLevel {
     OneStar,
     TwoStar,
-    ThreeStar
+    ThreeStar,
 }
 
 pub struct Champion {
     pub cost: ChampionCost,
     pub name: String,
-    pub star: StarLevel
+    pub star: StarLevel,
+    pub traits: Vec<String>,
+}
+
+impl Default for Champion {
+    fn default() -> Self {
+        Self {
+            cost: ChampionCost::OneCost,
+            name: Default::default(),
+            star: StarLevel::OneStar,
+            traits: Default::default(),
+        }
+    }
 }
 
 pub enum PlayerState {
     Dead,
-    Alive
+    Alive,
 }
 
 pub struct BoardState {
     pub champions: RefCell<Vec<Champion>>,
     level: u8,
     pub state: PlayerState,
-    pub player_name: String
+    pub player_name: String,
 }
 
 pub struct PlayerLevelOutOfBoundsError {
-    attempted_level: u8
+    attempted_level: u8,
 }
 
 impl BoardState {
@@ -44,19 +56,19 @@ impl BoardState {
             champions: RefCell::new(Vec::new()),
             level: 1,
             state: PlayerState::Alive,
-            player_name
+            player_name,
         }
     }
 
-    pub fn set_level(mut self, attempted_level: u8) -> Result<Self, PlayerLevelOutOfBoundsError>  {
-       match attempted_level {
-           1..=MAX_LEVEL => {
-               self.level = attempted_level;
-               Ok(self)
-           }
-           _ => Err(PlayerLevelOutOfBoundsError{ attempted_level }),
-       }
-    } 
+    pub fn set_level(mut self, attempted_level: u8) -> Result<Self, PlayerLevelOutOfBoundsError> {
+        match attempted_level {
+            1..=MAX_LEVEL => {
+                self.level = attempted_level;
+                Ok(self)
+            }
+            _ => Err(PlayerLevelOutOfBoundsError { attempted_level }),
+        }
+    }
 
     pub fn get_level(&self) -> u8 {
         self.level
@@ -66,7 +78,7 @@ impl BoardState {
 struct GameState {
     enemy_boards: [BoardState; MAX_NUMBER_OF_PLAYERS - 1],
     player_board: BoardState,
-    round: Round
+    round: Round,
 }
 
 pub enum Round {
@@ -122,4 +134,6 @@ pub enum Round {
     SevenFive,
     SevenSix,
     SevenSeven,
+
+    EightOne,
 }
