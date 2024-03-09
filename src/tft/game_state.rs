@@ -16,11 +16,15 @@ impl GameState {
     pub fn generate_initial_board(input: UserInput) -> Self {
         GameState {
             player_board: BoardState {
-                champions: RefCell::new(input
-                    .target_champions
-                    .iter()
-                    .flat_map(|c| get_champions_by_copies(c.number_owned, c.name.clone()).into_iter())
-                    .collect()),
+                champions: RefCell::new(
+                    input
+                        .target_champions
+                        .iter()
+                        .flat_map(|c| {
+                            get_champions_by_copies(c.number_owned, c.name.clone()).into_iter()
+                        })
+                        .collect(),
+                ),
                 ..BoardState::new("our guy".into(), input.level)
             },
             enemy_boards: [
@@ -41,6 +45,7 @@ fn get_champions_by_copies(copies: u8, champ: Champion) -> Vec<Champion> {
     let mut copies = copies;
     let mut champs = vec![];
 
+    // there is atleast 1 3 star
     if copies / 9 > 1 {
         let num_3_star = (copies as f32 / 9.0).floor() as u8;
         copies = copies % 9;
@@ -53,6 +58,8 @@ fn get_champions_by_copies(copies: u8, champ: Champion) -> Vec<Champion> {
             })
         }
     }
+
+    // there is atleast 1 2 star
     if copies / 3 > 1 {
         let num_2_star = (copies as f32 / 3.0).floor() as u8;
         copies = copies % 3;
@@ -75,4 +82,29 @@ fn get_champions_by_copies(copies: u8, champ: Champion) -> Vec<Champion> {
     }
 
     champs
+}
+
+#[cfg(test)]
+mod test {
+    use crate::tft::{
+        game_state::get_champions_by_copies,
+        sets::set11::Set11,
+        tft_model::{Champion, ChampionCost, StarLevel},
+    };
+
+    #[test]
+    fn champ_copies() {
+        let set11 = Set11::new();
+        let num_copies = 7;
+        let one_star = set11.set_11_champions.get(0).unwrap().clone();
+        let two_star = Champion {
+            star: StarLevel::TwoStar,
+            ..one_star.clone()
+        };
+        let expected_champs = vec![two_star.clone(), two_star, one_star.clone()];
+        assert_eq!(
+            expected_champs,
+            get_champions_by_copies(num_copies, one_star)
+        )
+    }
 }

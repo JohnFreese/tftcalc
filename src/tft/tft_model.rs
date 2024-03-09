@@ -2,7 +2,7 @@ use std::cell::RefCell;
 
 use super::constants::{MAX_LEVEL, MAX_NUMBER_OF_PLAYERS};
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum ChampionCost {
     OneCost,
     TwoCost,
@@ -11,14 +11,14 @@ pub enum ChampionCost {
     FiveCost,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum StarLevel {
     OneStar,
     TwoStar,
     ThreeStar,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Champion {
     pub cost: ChampionCost,
     pub name: String,

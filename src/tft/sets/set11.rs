@@ -2,8 +2,8 @@ use crate::tft::tft_model::{Champion, ChampionCost, StarLevel};
 
 use super::set_model::Set;
 
-struct Set11 {
-    set_11_champions: Vec<Champion>,
+pub struct Set11 {
+    pub set_11_champions: Vec<Champion>,
     champion_names: Vec<String>
 }
 
