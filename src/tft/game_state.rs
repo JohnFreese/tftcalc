@@ -19,7 +19,7 @@ impl GameState {
                 champions: RefCell::new(input
                     .target_champions
                     .iter()
-                    .flat_map(|c| get_champions_by_copies(c.number_owned, c.name).into_iter())
+                    .flat_map(|c| get_champions_by_copies(c.number_owned, c.name.clone()).into_iter())
                     .collect()),
                 ..BoardState::new("our guy".into(), input.level)
             },

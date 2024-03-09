@@ -70,7 +70,7 @@ mod factorial {
     use once_cell::sync::Lazy;
     use std::collections::HashMap;
 
-    static FACTORIAL_TABLE: Lazy<HashMap<usize, usize>> = Lazy::new(|| HashMap::new());
+    const FACTORIAL_TABLE: Lazy<HashMap<usize, usize>> = Lazy::new(|| HashMap::new());
 
     pub fn factorial(num: usize) -> usize {
         if num < 2 {

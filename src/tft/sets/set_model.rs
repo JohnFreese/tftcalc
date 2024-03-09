@@ -1,8 +1,8 @@
 use crate::tft::tft_model::{Champion, Round};
 
 pub trait Set {
-    fn get_set_champions() -> Vec<Champion>;
-    fn get_champion_by_name(name: String) -> Option<Champion>;
+    fn get_set_champions(&self) -> &Vec<Champion>;
+    fn get_champion_by_name(&self, name: String) -> Option<Champion>;
 
     // lifecycle methods that we provide a default implementation for
     // the idea is we'll use these to encapsulate set mechanics

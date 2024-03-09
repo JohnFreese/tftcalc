@@ -46,7 +46,7 @@ pub enum PlayerState {
 #[derive(Clone)]
 pub struct BoardState {
     pub champions: RefCell<Vec<Champion>>,
-    level: u8,
+    pub level: u8,
     pub state: PlayerState,
     pub player_name: String,
 }
