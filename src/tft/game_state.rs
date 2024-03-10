@@ -76,13 +76,17 @@ impl UnitAmountsByCost {
     #[inline]
     pub fn add_champion(&mut self, champion: &Champion) {
         match champion.cost {
-            ChampionCost::OneCost => self.one_cost += convert_star_level_to_amount(champion.star),
-            ChampionCost::TwoCost => self.two_cost += convert_star_level_to_amount(champion.star),
+            ChampionCost::OneCost => self.one_cost += convert_star_level_to_amount(&champion.star),
+            ChampionCost::TwoCost => self.two_cost += convert_star_level_to_amount(&champion.star),
             ChampionCost::ThreeCost => {
-                self.three_cost += convert_star_level_to_amount(champion.star)
+                self.three_cost += convert_star_level_to_amount(&champion.star)
             }
-            ChampionCost::FourCost => self.four_cost += convert_star_level_to_amount(champion.star),
-            ChampionCost::FiveCost => self.five_cost += convert_star_level_to_amount(champion.star),
+            ChampionCost::FourCost => {
+                self.four_cost += convert_star_level_to_amount(&champion.star)
+            }
+            ChampionCost::FiveCost => {
+                self.five_cost += convert_star_level_to_amount(&champion.star)
+            }
         }
     }
 }

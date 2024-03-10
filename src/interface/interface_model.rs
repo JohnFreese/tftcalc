@@ -18,6 +18,6 @@ pub struct TargetChampion {
 impl TargetChampion {
     #[inline]
     pub fn get_amount_needed(&self) -> u8 {
-        convert_star_level_to_amount(self.target_star_level) - self.number_owned
+        convert_star_level_to_amount(&self.target_star_level) - self.number_owned
     }
 }

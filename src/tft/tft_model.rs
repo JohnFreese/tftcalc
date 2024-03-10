@@ -81,7 +81,7 @@ pub struct PlayerLevelOutOfBoundsError {
 impl BoardState {
     pub fn new(player_name: String, level: u8) -> BoardState {
         BoardState {
-            champions: RefCell::new(Vec::new()),
+            champions: Vec::new(),
             state: PlayerState::Alive,
             level,
             player_name,

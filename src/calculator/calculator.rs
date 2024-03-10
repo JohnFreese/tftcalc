@@ -12,12 +12,12 @@ use crate::{
     },
 };
 
-pub fn calculateSlotTransistionMatrix(
+pub fn calculate_slot_transistion_matrix(
     player_level: u8,
     target_champions: Vec<TargetChampion>,
     game_state: GameState,
 ) {
-    let otherOwnedUnitsByCost = game_state.get_owned_units_by_cost();
+    let other_owned_units_by_cost = game_state.get_owned_units_by_cost();
     let matrix_size = target_champions
         .iter()
         .map(|tc| tc.get_amount_needed())
@@ -25,7 +25,7 @@ pub fn calculateSlotTransistionMatrix(
 
     let transition_matrix: DMatrix<u8> = DMatrix::zeros(matrix_size.into(), matrix_size.into());
 
-    let ranges: Vec<Vec<u8>> = target_champions
+    let mut ranges: Vec<Vec<u8>> = target_champions
         .iter()
         .map(|tc| tc.get_amount_needed())
         .map(|amount| {
@@ -38,6 +38,8 @@ pub fn calculateSlotTransistionMatrix(
         .collect();
 
     let states: Vec<Vec<u8>> = ranges
-        .iter()
-        .reduce(|acc, cur| acc.iter().cartesian_product(cur).collect());
+        .into_iter()
+        .map(|v| v.into_iter())
+        .multi_cartesian_product()
+        .collect();
 }
