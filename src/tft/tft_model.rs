@@ -11,11 +11,33 @@ pub enum ChampionCost {
     FiveCost,
 }
 
+impl From<ChampionCost> for u8 {
+    fn from(value: ChampionCost) -> Self {
+        match value {
+            ChampionCost::OneCost => 1,
+            ChampionCost::TwoCost => 2,
+            ChampionCost::ThreeCost => 3,
+            ChampionCost::FourCost => 4,
+            ChampionCost::FiveCost => 5,
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum StarLevel {
     OneStar,
     TwoStar,
     ThreeStar,
+}
+
+impl From<StarLevel> for u8 {
+    fn from(value: StarLevel) -> Self {
+        match value {
+            StarLevel::OneStar => 1,
+            StarLevel::TwoStar => 2,
+            StarLevel::ThreeStar => 3,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -45,7 +67,7 @@ pub enum PlayerState {
 
 #[derive(Clone)]
 pub struct BoardState {
-    pub champions: RefCell<Vec<Champion>>,
+    pub champions: Vec<Champion>,
     pub level: u8,
     pub state: PlayerState,
     pub player_name: String,

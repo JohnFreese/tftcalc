@@ -4,7 +4,7 @@ use super::set_model::Set;
 
 pub struct Set11 {
     pub set_11_champions: Vec<Champion>,
-    champion_names: Vec<String>
+    champion_names: Vec<String>,
 }
 
 impl Set11 {
@@ -30,7 +30,7 @@ impl Set11 {
 
         Set11 {
             set_11_champions,
-            champion_names
+            champion_names,
         }
     }
 }

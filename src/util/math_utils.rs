@@ -1,5 +1,9 @@
 use factorial::factorial;
-use std::{collections::HashMap, io::Empty, ptr::{self, null_mut, null}};
+use std::{
+    collections::HashMap,
+    io::Empty,
+    ptr::{self, null, null_mut},
+};
 
 use crate::util::linked_list::Node;
 
@@ -13,7 +17,7 @@ pub fn multiset_permute(set: Vec<usize>) -> Vec<Vec<usize>> {
     let mut slice = set.clone();
     let mut ll = LinkedList::from(slice);
 
-    unsafe {    
+    unsafe {
         let mut h = ll.get_raw_reference(0); // first element
         let mut i = ll.get_raw_reference(set.len() - 2); // second to last element
         let mut j = ll.get_raw_reference(set.len() - 1); // last element
@@ -92,8 +96,8 @@ fn test_multiset_permute() {
     let vec = vec![4, 2, 1, 1];
     let actual = multiset_permute(vec);
     let expected = vec![
-        vec![4, 2, 1, 1], 
-        vec![1, 4, 2, 1], 
+        vec![4, 2, 1, 1],
+        vec![1, 4, 2, 1],
         vec![4, 1, 2, 1],
         vec![1, 4, 1, 2],
         vec![1, 1, 4, 2],
@@ -103,7 +107,7 @@ fn test_multiset_permute() {
         vec![2, 1, 4, 1],
         vec![1, 2, 1, 4],
         vec![1, 1, 2, 4],
-        vec![2, 1, 1, 4]
+        vec![2, 1, 1, 4],
     ];
 
     assert_eq!(actual, expected);

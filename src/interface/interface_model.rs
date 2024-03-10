@@ -2,7 +2,7 @@ use crate::tft::tft_model::{Champion, StarLevel};
 
 pub struct UserInput {
     pub target_champions: Vec<TargetChampion>,
-    pub level: u8 
+    pub level: u8,
 }
 
 pub struct TargetChampion {
