@@ -9,6 +9,7 @@ use crate::{
     tft::{
         game_state::{GameState, UnitAmountsByCost},
         tft_model::Champion,
+        tft_utils::convert_star_level_to_amount,
     },
 };
 
@@ -42,11 +43,29 @@ pub fn calculate_slot_transistion_matrix(
     /// it represents every permutation of outcomes possible
     /// i.e. 2 kaisa, 0 sett
     ///      1 kaisa, 1 sett
-    ///      0 kaisa, 2 set
+    ///      0 kaisa, 2 seTt
     ///      etc..
     let states: Vec<Vec<u8>> = ranges
         .into_iter()
         .map(|v| v.into_iter())
         .multi_cartesian_product()
         .collect();
+
+    states.iter().for_each(|state| {
+        let index = state_index(&target_champions, state);
+        let units_found = UnitAmountsByCost::default();
+    })
+}
+
+// Returns a consistent multidimensional matrix index mapped onto 1D
+pub fn state_index(target_champions: &Vec<TargetChampion>, indices: &Vec<u8>) -> u32 {
+    let mut index: u32 = 0;
+    let mut mult: u32 = 1;
+
+    Iterator::zip(target_champions.iter(), indices.iter()).for_each(|(tc, i)| {
+        index += mult * u32::from(*i);
+        mult *= u32::from(convert_star_level_to_amount(&tc.target_star_level)) + 1;
+    });
+
+    index
 }

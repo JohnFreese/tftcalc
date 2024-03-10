@@ -64,6 +64,7 @@ impl GameState {
     }
 }
 
+#[derive(Default)]
 pub struct UnitAmountsByCost {
     pub one_cost: u8,
     pub two_cost: u8,
