@@ -48,6 +48,17 @@ pub fn multiset_permute(set: Vec<usize>) -> Vec<Vec<usize>> {
     permutations
 }
 
+// pub fn calculate_cartesian_product<T: Copy>(ranges: Vec<Vec<T>>) -> Vec<Vec<T>> {
+//     let num_perms = ranges.iter()
+//         .map(|r| r.len())
+//         .fold(1, |acc, cur| acc * cur);
+//
+//     let cartesian_product = vec![vec![0; ranges.len()]; num_perms];
+//
+//
+//     cartesian_product
+// }
+
 // n!/(m1! * m2! ... * mn!)
 fn calculate_unique_permutations(set: &Vec<usize>) -> usize {
     let multiplicities = calculate_multiplicities(&set);

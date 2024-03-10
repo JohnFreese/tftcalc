@@ -7,6 +7,7 @@ use crate::interface::interface_model::UserInput;
 
 use super::constants::{MAX_LEVEL, MAX_NUMBER_OF_PLAYERS};
 use super::tft_model::{BoardState, Champion, ChampionCost, Round, StarLevel};
+use super::tft_utils::convert_star_level_to_amount;
 
 pub struct GameState {
     pub enemy_boards: [BoardState; MAX_NUMBER_OF_PLAYERS - 1],
@@ -50,37 +51,16 @@ impl GameState {
         };
 
         for c in &self.player_board.champions {
-            Self::add_to_owned_units(c, &mut owned_units_by_cost)
+            owned_units_by_cost.add_champion(c);
         }
 
         for e in &self.enemy_boards {
             for c in &e.champions {
-                Self::add_to_owned_units(c, &mut owned_units_by_cost);
+                owned_units_by_cost.add_champion(c);
             }
         }
 
         owned_units_by_cost
-    }
-
-    #[inline]
-    fn add_to_owned_units(champion: &Champion, owned_units_by_cost: &mut UnitAmountsByCost) {
-        match champion.cost {
-            ChampionCost::OneCost => {
-                owned_units_by_cost.one_cost += convert_star_level_to_amount(champion.star)
-            }
-            ChampionCost::TwoCost => {
-                owned_units_by_cost.two_cost += convert_star_level_to_amount(champion.star)
-            }
-            ChampionCost::ThreeCost => {
-                owned_units_by_cost.three_cost += convert_star_level_to_amount(champion.star)
-            }
-            ChampionCost::FourCost => {
-                owned_units_by_cost.four_cost += convert_star_level_to_amount(champion.star)
-            }
-            ChampionCost::FiveCost => {
-                owned_units_by_cost.five_cost += convert_star_level_to_amount(champion.star)
-            }
-        }
     }
 }
 
@@ -92,10 +72,19 @@ pub struct UnitAmountsByCost {
     pub five_cost: u8,
 }
 
-// TODO: find a home for this
-pub fn convert_star_level_to_amount(star_level: StarLevel) -> u8 {
-    let base_power: u8 = 3;
-    base_power.pow(star_level.into() - 1)
+impl UnitAmountsByCost {
+    #[inline]
+    pub fn add_champion(&mut self, champion: &Champion) {
+        match champion.cost {
+            ChampionCost::OneCost => self.one_cost += convert_star_level_to_amount(champion.star),
+            ChampionCost::TwoCost => self.two_cost += convert_star_level_to_amount(champion.star),
+            ChampionCost::ThreeCost => {
+                self.three_cost += convert_star_level_to_amount(champion.star)
+            }
+            ChampionCost::FourCost => self.four_cost += convert_star_level_to_amount(champion.star),
+            ChampionCost::FiveCost => self.five_cost += convert_star_level_to_amount(champion.star),
+        }
+    }
 }
 
 fn get_champions_by_copies(copies: u8, champ: Champion) -> Vec<Champion> {
